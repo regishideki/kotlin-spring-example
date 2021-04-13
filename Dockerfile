@@ -10,7 +10,7 @@ RUN mkdir /gradle-cache
 
 WORKDIR /app
 
-COPY build.gradle settings.gradle /app/
+COPY build.gradle.kts settings.gradle /app/
 RUN mkdir -p /app/src/main/kotlin/
 RUN echo 'package build\n\class DummyApp\n\fun main(){}\n' >> /app/src/main/kotlin/DummyApp.kt
 
