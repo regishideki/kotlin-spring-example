@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kotlin-spring-example-deployment
+spec:
+  replicas: 3
+  minReadySeconds: 100
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: kotlin-spring-example-app
+  template:
+    metadata:
+      name: kotlin-spring-example-app
+      labels:
+        app: kotlin-spring-example-app
+    spec:
+      containers:
+        - image: regishattori/kotlin-spring-example:v2
+          name: kotlin-spring-example-app
+          readinessProbe:
+            periodSeconds: 1
+            httpGet:
+              path: /health
+              port: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kotlin-spring-example-service
+spec:
+  ports:
+    - port: 80
+      targetPort: 8080
+  selector:
+    app: kotlin-spring-example-app
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: kotlin-spring-example-ingress
+spec:
+  rules:
+    - host: kotlin-spring-example.example.com
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: kotlin-spring-example-service
+              servicePort: 80
